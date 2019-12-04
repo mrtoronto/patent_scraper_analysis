@@ -229,4 +229,4 @@ def patents_metadata_extraction(term, res_start = 1, n_results = 0, export_path 
     return patents_dict
 
 
-patents_metadata_extraction('microbiome', res_start = 1, n_results = 300, export_path = 'test1k2')
+patents_metadata_extraction('probiotic', res_start = 1, n_results = 1100, export_path = 'test1k_prob')

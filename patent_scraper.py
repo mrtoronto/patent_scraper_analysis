@@ -1,7 +1,8 @@
 import json
 from selenium import webdriver
 from selenium.common.exceptions import SessionNotCreatedException
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.options import Options as ffOptions
+from selenium.webdriver.chrome.options import Options as chromeOptions
 import requests, re, time, collections
 from tqdm import tqdm as tqdm
 
@@ -32,6 +33,87 @@ def term_to_patents(term):
         patent_link_list.append(patent_url)
 
     return patent_link_list
+    
+    
+def create_browser(url, browser_type = 'Firefox'):
+    
+    if browser_type == 'Chrome':
+        options = chromeOptions()
+        options.add_argument("--disable-extensions")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--headless")
+        options.add_argument("--loglevel0")
+        try:
+            browser = webdriver.Chrome(options=options)
+            #browser = webdriver.Safari()
+        ### If session fails, try to close any pre-existing browsers and re-try.
+        except SessionNotCreatedException as e:
+            print('Closing Session\n', e)
+            try:
+                browser.close()
+            except:
+                pass
+            try:
+                browser.quit()
+            except:
+                pass
+            browser = webdriver.Chrome(options=options)
+
+        try:
+            browser.get(patent_url)
+            time.sleep(5)
+        except:
+            print('sleeping 5 seconds.')
+            time.sleep(5)
+            try:
+                browser.get(patent_url)
+                time.sleep(5)
+            except:
+                print('sleeping 60 seconds.')
+                time.sleep(60)
+                try:
+                    browser.get(patent_url)
+                    time.sleep(5)
+                except:
+                    return None
+                    
+    elif browser_type == 'Firefox':
+        options = ffOptions()
+        options.headless = True
+        
+        try:
+            browser = webdriver.Firefox(options=options)
+            #browser = webdriver.Safari()
+        ### If session fails, try to close any pre-existing browsers and re-try.
+        except SessionNotCreatedException as e:
+            print('Closing Session\n', e)
+            try:
+                browser.close()
+            except:
+                pass
+            try:
+                browser.quit()
+            except:
+                pass
+            browser = webdriver.Firefox(options=options)
+
+        try:
+            browser.get(patent_url)
+            time.sleep(5)
+        except:
+            print('sleeping 5 seconds.')
+            time.sleep(5)
+            try:
+                browser.get(patent_url)
+                time.sleep(5)
+            except:
+                print('sleeping 60 seconds.')
+                time.sleep(60)
+                try:
+                    browser.get(patent_url)
+                    time.sleep(5)
+                except:
+                    return None
 
 
 def patent_scrape(patent_url, patent_count):
@@ -45,38 +127,10 @@ def patent_scrape(patent_url, patent_count):
     """
 
     ### Try to open a selenium browser.
-    options = Options()
-    options.headless = True
-    try:
-        browser = webdriver.Firefox(options=options)
-        #browser = webdriver.Safari()
-    ### If session fails, try to close any pre-existing browsers and re-try.
-    except SessionNotCreatedException as e:
-        print('Closing Session\n', e)
-        browser.close()
-        browser.quit()
-        browser = webdriver.Firefox(options=options)
-        #browser = webdriver.Safari()
-
-    try:
-        browser.get(patent_url)
-        time.sleep(5)
-    except:
-        print('sleeping 5 seconds.')
-        time.sleep(5)
-        try:
-            browser.get(patent_url)
-            time.sleep(5)
-        except:
-            print('sleeping 60 seconds.')
-            time.sleep(60)
-            try:
-                browser.get(patent_url)
-                time.sleep(5)
-            except:
-                print(f'Returning blank for {patent_url}.')
-                return {'page_url' : patent_url}, patent_count
-
+    browser = create_browser(url = patent_url, browser_type = 'Firefox')
+    if browser is None:
+        print(f'Returning blank for {patent_url}.')
+        return {'page_url' : patent_url}, patent_count
     ### Grab the raw page_source
     html = browser.page_source
 
@@ -137,11 +191,6 @@ def patent_scrape(patent_url, patent_count):
     box_2 = [i.strip() for i in tables_list[2].split('\n') if i.strip() != '']
     while len(box_2) < 3:
         box_2.append('')
-
-    if re.search("Type *.*", box_2[2]):
-        applicant = re.search("Type *.*", box_2[2]).group()[5:].strip()
-    else:
-        applicant = ''
     ### Use this regex pattern to isolate the claims from the subbed page source
     claims = re.search("  Claims.{1,30}1\. {1,2}.*  ((Description)|(DESCRIPTION))", subbed_html)
 
@@ -162,7 +211,7 @@ def patent_scrape(patent_url, patent_count):
     page_dict['document_number'] = document_number
     page_dict['patent_number'] = box_1[1]
     page_dict['inventors'] = box_2[1]
-    page_dict['applicant'] = applicant
+    page_dict['applicant'] = box_2[3]
     page_dict['abstract'] = abstract
     page_dict['claims'] = claims
     page_dict['cited_references'] = main_references
@@ -229,4 +278,4 @@ def patents_metadata_extraction(term, res_start = 1, n_results = 0, export_path 
     return patents_dict
 
 
-patents_metadata_extraction('probiotic', res_start = 1, n_results = 1100, export_path = 'test1k_prob')
+patents_metadata_extraction('probiotic', res_start = 5, n_results = 5, export_path = 'test123723_prob')

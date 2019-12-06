@@ -42,7 +42,7 @@ def create_browser(url, browser_type = 'Firefox'):
         options.add_argument("--disable-extensions")
         options.add_argument("--disable-gpu")
         options.add_argument("--headless")
-        options.add_argument("--loglevel0")
+        options.add_argument("--log-level=3")
         try:
             browser = webdriver.Chrome(options=options)
             #browser = webdriver.Safari()
@@ -60,19 +60,19 @@ def create_browser(url, browser_type = 'Firefox'):
             browser = webdriver.Chrome(options=options)
 
         try:
-            browser.get(patent_url)
+            browser.get(url)
             time.sleep(5)
         except:
             print('sleeping 5 seconds.')
             time.sleep(5)
             try:
-                browser.get(patent_url)
+                browser.get(url)
                 time.sleep(5)
             except:
                 print('sleeping 60 seconds.')
                 time.sleep(60)
                 try:
-                    browser.get(patent_url)
+                    browser.get(url)
                     time.sleep(5)
                 except:
                     return None
@@ -98,22 +98,24 @@ def create_browser(url, browser_type = 'Firefox'):
             browser = webdriver.Firefox(options=options)
 
         try:
-            browser.get(patent_url)
+            browser.get(url)
             time.sleep(5)
         except:
             print('sleeping 5 seconds.')
             time.sleep(5)
             try:
-                browser.get(patent_url)
+                browser.get(url)
                 time.sleep(5)
             except:
                 print('sleeping 60 seconds.')
                 time.sleep(60)
                 try:
-                    browser.get(patent_url)
+                    browser.get(url)
                     time.sleep(5)
                 except:
                     return None
+                    
+    return browser
 
 
 def patent_scrape(patent_url, patent_count):
@@ -185,11 +187,11 @@ def patent_scrape(patent_url, patent_count):
 
     ### Box starts with "United States Patent"
     box_1 = [i.strip() for i in tables_list[1].split('\n') if i.strip() != '']
-    while len(box_1) < 2:
+    while len(box_1) <= 2:
         box_1.append('')
     ### Box starts with "Inventors"
     box_2 = [i.strip() for i in tables_list[2].split('\n') if i.strip() != '']
-    while len(box_2) < 3:
+    while len(box_2) <= 3:
         box_2.append('')
     ### Use this regex pattern to isolate the claims from the subbed page source
     claims = re.search("  Claims.{1,30}1\. {1,2}.*  ((Description)|(DESCRIPTION))", subbed_html)
@@ -210,7 +212,7 @@ def patent_scrape(patent_url, patent_count):
     page_dict['publication_date'] = publication_date
     page_dict['document_number'] = document_number
     page_dict['patent_number'] = box_1[1]
-    page_dict['inventors'] = box_2[1]
+    page_dict['inventors'] = box_2[0]
     page_dict['applicant'] = box_2[3]
     page_dict['abstract'] = abstract
     page_dict['claims'] = claims
@@ -278,4 +280,4 @@ def patents_metadata_extraction(term, res_start = 1, n_results = 0, export_path 
     return patents_dict
 
 
-patents_metadata_extraction('probiotic', res_start = 5, n_results = 5, export_path = 'test123723_prob')
+patents_metadata_extraction('probiotic', res_start = 1, n_results = 1000, export_path = 'probiotic_pats')

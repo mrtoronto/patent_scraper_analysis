@@ -37,7 +37,7 @@ In this notebook, I created a pipeline to analyze the content of the abstracts o
 
 ### uBiome Analysis
 
-I specifically dove into uBiome because I knew a bit about their business from before they filed for bankruptcy and was interested to see what their patents looked like. 
+I specifically dove into uBiome because I knew a bit about their business from before they filed for bankruptcy and was interested to see what their patents looked like.  
 
 #### Inventors
 

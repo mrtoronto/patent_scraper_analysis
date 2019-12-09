@@ -35,20 +35,30 @@ In this notebook, I created a pipeline to analyze the content of the abstracts o
 
 ![](https://i.imgur.com/0aAnkUf.png)
 
+### uBiome Analysis
+
+I specifically dove into uBiome because I knew a bit about their business from before they filed for bankrupcy and I was interested to see what their patents looked like. 
+
+#### Inventors
+
+![](https://i.imgur.com/37tUJz5.png)
+
+#### Publication Dates
+
+![](https://i.imgur.com/qTdFdIG.png)
+
+#### Claims Topic 3-Gram Cloud
+
+![](https://i.imgur.com/jIB6gx6.png)
+
 ## To Do
 
-- Fix applicant field in scraper
-  - Should be fixed in most recent scraper update but new data hasn't been scraped and used in notebooks
-- Analyze applicant field
-  - Applicants by year and by year-quarter 
 - Standardize plots
   - Both high-level style choices (grids, tick marks, font sizes) to axis labels, titles and legends.
-- Do text analysis on claims
-  - Probably following similar steps as abstracts.
-  - Could also use some more in depth analysis. 
-  - Research more in depth analysis. 
+- Do more in-depth text analysis
+  - Got into claims and was able to apply N-Gram analysis and LDA Topic Modeling to both claims and abstracts
+  - Next step is to find a more in depth method of analyzing text. LDA seems sufficient for unsupervised clustering but there may be more complex methods out there. 
   
 ## Example Input Data
 
-https://drive.google.com/open?id=1Pi6Inlb9UMw2nAiZ6T5Nhf6QCl7kl55g
-
+https://drive.google.com/file/d/1FtqAcsA-xKhNqVqFMK0rzjQTmsxWaIz3/view?usp=sharing
